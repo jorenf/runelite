@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#2d5a27" />
+  <meta name="description" content="OSRS Farming Tracker — push notifications when your trees are ready" />
+  <title>OSRS Farming Tracker</title>
+
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon"     href="/icon-192.png" sizes="192x192" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>🌳 Farming Tracker</h1>
+    <button id="notify-btn" type="button">🔔 Enable Notifications</button>
+  </header>
+
+  <button id="refresh-btn" type="button">↻ Refresh</button>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- Section 1: Patches                                                   -->
+  <!-- ------------------------------------------------------------------ -->
+  <section aria-label="Farming patches">
+    <h2>Patches</h2>
+    <div id="patch-list" class="card-list">
+      <p class="empty">Loading…</p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- Section 2: Seeds / saplings                                          -->
+  <!-- ------------------------------------------------------------------ -->
+  <section aria-label="Seed inventory">
+    <h2>Seeds &amp; Saplings</h2>
+    <div id="seed-list" class="card-list">
+      <p class="empty">Loading…</p>
+    </div>
+  </section>
+
+  <!-- ------------------------------------------------------------------ -->
+  <!-- Section 3: Planting advice                                           -->
+  <!-- ------------------------------------------------------------------ -->
+  <section aria-label="Planting advice">
+    <h2>Plant Next (by XP/hr)</h2>
+    <div id="advice-list">
+      <p class="empty">Loading…</p>
+    </div>
+  </section>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
