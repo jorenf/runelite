@@ -1,8 +1,8 @@
 plugins {
     id 'java'
     id 'checkstyle'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
-    id 'io.freefair.lombok' version '6.6.1'
+    id 'com.gradleup.shadow' version '8.3.6'
+    id 'io.freefair.lombok' version '8.10.2'
 }
 
 repositories {
@@ -19,8 +19,9 @@ dependencies {
     // RuneLite API — provided at runtime by the launcher
     compileOnly group: 'net.runelite', name: 'client', version: runeLiteVersion
 
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+    // io.freefair.lombok plugin automatically configures the annotation processor.
+    // The compileOnly line keeps IDE support working.
+    compileOnly 'org.projectlombok:lombok:1.18.36'
 
     // Bundled into the shadow jar
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
