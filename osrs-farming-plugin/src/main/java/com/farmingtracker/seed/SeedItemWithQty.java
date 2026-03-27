@@ -1,15 +1,20 @@
 package com.farmingtracker.seed;
 
-import lombok.Value;
-
 /**
  * A {@link SeedItem} paired with the player's current available quantity.
- * Returned by {@link SeedInventory#getAvailableSeeds()} and used both
- * in the planting optimizer and in the webhook seed-update payload.
+ * Returned by {@link SeedInventory#getAvailableSeeds()}.
  */
-@Value
-public class SeedItemWithQty
+public final class SeedItemWithQty
 {
-    SeedItem seed;
-    int quantity;
+    private final SeedItem seed;
+    private final int      quantity;
+
+    public SeedItemWithQty(SeedItem seed, int quantity)
+    {
+        this.seed     = seed;
+        this.quantity = quantity;
+    }
+
+    public SeedItem getSeed()     { return seed; }
+    public int      getQuantity() { return quantity; }
 }

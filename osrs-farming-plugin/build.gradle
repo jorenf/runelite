@@ -17,10 +17,6 @@ dependencies {
     // RuneLite API — provided at runtime by the launcher
     compileOnly group: 'net.runelite', name: 'client', version: runeLiteVersion
 
-    // Lombok — configured manually so it works with any Gradle version (7, 8, 9+)
-    compileOnly      'org.projectlombok:lombok:1.18.36'
-    annotationProcessor 'org.projectlombok:lombok:1.18.36'
-
     // Bundled into the shadow jar
     implementation 'com.squareup.okhttp3:okhttp:4.12.0'
     implementation 'com.google.code.gson:gson:2.10.1'

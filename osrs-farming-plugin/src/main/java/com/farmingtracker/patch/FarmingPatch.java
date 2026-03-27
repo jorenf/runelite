@@ -1,26 +1,44 @@
 package com.farmingtracker.patch;
 
-import lombok.Value;
-
 /**
  * Immutable descriptor for a known farming patch location in the game world.
  * All instances are defined in {@link com.farmingtracker.data.FarmingData}.
  */
-@Value
-public class FarmingPatch
+public final class FarmingPatch
 {
+    private final String name;
+    private final PatchType type;
+    private final int worldX;
+    private final int worldY;
+    private final int plane;
+
+    public FarmingPatch(String name, PatchType type, int worldX, int worldY, int plane)
+    {
+        this.name   = name;
+        this.type   = type;
+        this.worldX = worldX;
+        this.worldY = worldY;
+        this.plane  = plane;
+    }
+
     /** Display name shown in overlays and webhook payloads, e.g. "Falador Tree Patch". */
-    String name;
+    public String getName()   { return name; }
 
     /** Whether this is a regular tree or fruit-tree patch. */
-    PatchType type;
+    public PatchType getType() { return type; }
 
-    /**
-     * Approximate world tile coordinates (x, y, plane).
-     * Used to identify which patch the player is standing near when they plant.
-     * Verify these against the OSRS Wiki "Farming" article if patches are mis-identified.
-     */
-    int worldX;
-    int worldY;
-    int plane;
+    /** World tile X coordinate (approximate). */
+    public int getWorldX()    { return worldX; }
+
+    /** World tile Y coordinate (approximate). */
+    public int getWorldY()    { return worldY; }
+
+    /** Plane (0 = surface). */
+    public int getPlane()     { return plane; }
+
+    @Override
+    public String toString()
+    {
+        return "FarmingPatch{name='" + name + "', type=" + type + "}";
+    }
 }

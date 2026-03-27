@@ -6,7 +6,6 @@ import com.farmingtracker.seed.SeedItemWithQty;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import lombok.extern.slf4j.Slf4j;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.MediaType;
@@ -14,6 +13,8 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -22,40 +23,22 @@ import java.util.List;
 
 /**
  * Sends asynchronous HTTP POST webhooks to the configured PWA backend.
- *
- * <h3>Endpoints</h3>
- * <ul>
- *   <li>{@code POST {webhookUrl}/api/notify} — fired when a patch becomes ready</li>
- *   <li>{@code POST {webhookUrl}/api/seeds}  — fired when the seed inventory changes</li>
- * </ul>
- *
- * <p>All calls are fire-and-forget on a background thread.
- * Network failures are logged at WARN level and silently ignored so that
- * the plugin never interrupts gameplay.
+ * All calls are fire-and-forget; network failures are logged and silently ignored.
  */
-@Slf4j
 @Singleton
 public class WebhookService
 {
+    private static final Logger log = LoggerFactory.getLogger(WebhookService.class);
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
 
-    @Inject
-    private OkHttpClient httpClient;
-
-    @Inject
-    private FarmingTrackerConfig config;
-
-    @Inject
-    private Gson gson;
-
-    // -----------------------------------------------------------------------
-    // Public API
-    // -----------------------------------------------------------------------
+    @Inject private OkHttpClient         httpClient;
+    @Inject private FarmingTrackerConfig config;
+    @Inject private Gson                 gson;
 
     /**
      * Sends a {@code patch_ready} event to {@code /api/notify}.
      *
-     * @param patch      the patch that has finished growing
+     * @param patch      the patch that finished growing
      * @param playerName the logged-in player's display name
      */
     public void sendPatchReady(TrackedPatch patch, String playerName)
@@ -64,21 +47,20 @@ public class WebhookService
         if (url == null) return;
 
         JsonObject body = new JsonObject();
-        body.addProperty("event", "patch_ready");
-        body.addProperty("patch", patch.getPatchName());
-        body.addProperty("plant", patch.getCropName());
+        body.addProperty("event",     "patch_ready");
+        body.addProperty("patch",     patch.getPatchName());
+        body.addProperty("plant",     patch.getCropName());
         body.addProperty("timestamp", System.currentTimeMillis());
-        body.addProperty("player", playerName);
+        body.addProperty("player",    playerName);
 
         postAsync(url, body.toString());
-        log.debug("Sent patch_ready webhook for {} at {}", patch.getCropName(), patch.getPatchName());
+        log.debug("Sent patch_ready webhook: {} at {}", patch.getCropName(), patch.getPatchName());
     }
 
     /**
      * Sends the player's current seed inventory to {@code /api/seeds}.
-     * Called whenever the inventory or bank contents change.
      *
-     * @param seeds      current list of saplings with quantities
+     * @param seeds      current sapling list with quantities
      * @param playerName the logged-in player's display name
      */
     public void sendSeedUpdate(List<SeedItemWithQty> seeds, String playerName)
@@ -89,31 +71,26 @@ public class WebhookService
         JsonArray seedArray = new JsonArray();
         for (SeedItemWithQty sqty : seeds)
         {
-            JsonObject seedObj = new JsonObject();
-            seedObj.addProperty("name", sqty.getSeed().getDisplayName());
-            seedObj.addProperty("quantity", sqty.getQuantity());
-            seedObj.addProperty("xpPerHour", Math.round(sqty.getSeed().getXpPerHour()));
-            seedArray.add(seedObj);
+            JsonObject obj = new JsonObject();
+            obj.addProperty("name",      sqty.getSeed().getDisplayName());
+            obj.addProperty("quantity",  sqty.getQuantity());
+            obj.addProperty("xpPerHour", Math.round(sqty.getSeed().getXpPerHour()));
+            seedArray.add(obj);
         }
 
         JsonObject body = new JsonObject();
-        body.add("seeds", seedArray);
+        body.add("seeds",  seedArray);
         body.addProperty("player", playerName);
 
         postAsync(url, body.toString());
-        log.debug("Sent seed update webhook ({} seed types)", seeds.size());
+        log.debug("Sent seed update ({} types)", seeds.size());
     }
-
-    // -----------------------------------------------------------------------
-    // Internal helpers
-    // -----------------------------------------------------------------------
 
     private String buildUrl(String path)
     {
         String base = config.webhookUrl();
         if (base == null || base.isBlank())
         {
-            log.debug("Webhook URL not configured — skipping call to {}", path);
             return null;
         }
         return base.replaceAll("/+$", "") + path;

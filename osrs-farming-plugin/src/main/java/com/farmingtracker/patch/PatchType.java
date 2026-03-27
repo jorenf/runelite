@@ -1,19 +1,21 @@
 package com.farmingtracker.patch;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-/**
- * The category of a farming patch tracked by this plugin.
- * Only tree and fruit-tree patches are tracked (per user configuration).
- */
-@Getter
-@RequiredArgsConstructor
+/** The category of a farming patch tracked by this plugin. */
 public enum PatchType
 {
     TREE("Tree"),
     FRUIT_TREE("Fruit Tree");
 
-    /** Human-readable label used in overlays and webhook payloads. */
     private final String displayName;
+
+    PatchType(String displayName)
+    {
+        this.displayName = displayName;
+    }
+
+    /** Human-readable label used in overlays and webhook payloads. */
+    public String getDisplayName()
+    {
+        return displayName;
+    }
 }

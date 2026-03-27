@@ -1,47 +1,48 @@
 package com.farmingtracker.patch;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 /**
  * A live planting event persisted to the RuneLite config profile.
  * One instance is created each time the player plants a sapling and removed
- * once the patch has been cleared (harvested/chopped/died).
+ * once the patch has been cleared (harvested / chopped / died).
  */
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class TrackedPatch
 {
-    /** Stable random UUID assigned at plant time. Used as a config key. */
     private String id;
-
-    /** Crop name as captured from the planting chat message, e.g. "magic". */
     private String cropName;
-
-    /**
-     * Name of the nearest known patch at plant time,
-     * e.g. "Falador Tree Patch". Falls back to the PatchType display name
-     * when no patch is close enough.
-     */
     private String patchName;
-
-    /** Category of the patch. */
     private PatchType patchType;
-
-    /** Epoch-millisecond timestamp when the sapling was planted. */
     private long plantedAt;
-
-    /**
-     * Epoch-millisecond timestamp when the tree should be fully grown.
-     * Calculated as {@code plantedAt + (growTimeMinutes * 60_000)}.
-     */
     private long readyAt;
-
-    /**
-     * Whether the "ready" webhook + in-game notification has already been sent.
-     * Prevents duplicate notifications across multiple game ticks.
-     */
     private boolean notified;
+
+    /** Required for Gson deserialisation. */
+    public TrackedPatch() {}
+
+    public TrackedPatch(String id, String cropName, String patchName,
+                        PatchType patchType, long plantedAt, long readyAt, boolean notified)
+    {
+        this.id        = id;
+        this.cropName  = cropName;
+        this.patchName = patchName;
+        this.patchType = patchType;
+        this.plantedAt = plantedAt;
+        this.readyAt   = readyAt;
+        this.notified  = notified;
+    }
+
+    public String    getId()        { return id; }
+    public String    getCropName()  { return cropName; }
+    public String    getPatchName() { return patchName; }
+    public PatchType getPatchType() { return patchType; }
+    public long      getPlantedAt() { return plantedAt; }
+    public long      getReadyAt()   { return readyAt; }
+    public boolean   isNotified()   { return notified; }
+
+    public void setId(String id)              { this.id = id; }
+    public void setCropName(String cropName)  { this.cropName = cropName; }
+    public void setPatchName(String name)     { this.patchName = name; }
+    public void setPatchType(PatchType t)     { this.patchType = t; }
+    public void setPlantedAt(long plantedAt)  { this.plantedAt = plantedAt; }
+    public void setReadyAt(long readyAt)      { this.readyAt = readyAt; }
+    public void setNotified(boolean notified) { this.notified = notified; }
 }

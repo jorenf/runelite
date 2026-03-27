@@ -1,9 +1,10 @@
 package com.farmingtracker.seed;
 
 import com.farmingtracker.data.FarmingData;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -14,24 +15,19 @@ import java.util.Map;
 /**
  * Tracks the player's current supply of tree and fruit-tree saplings
  * across their inventory and (optionally) their bank.
- *
- * <p>Quantities are merged: a sapling found in both inventory and bank
- * will show the combined total.
  */
-@Slf4j
 @Singleton
 public class SeedInventory
 {
-    /** Quantities held in the player's inventory (itemId → count). */
-    private final Map<Integer, Integer> inventoryQuantities = new HashMap<>();
+    private static final Logger log = LoggerFactory.getLogger(SeedInventory.class);
 
-    /** Quantities held in the player's bank (itemId → count). */
-    private final Map<Integer, Integer> bankQuantities = new HashMap<>();
+    private final Map<Integer, Integer> inventoryQuantities = new HashMap<>();
+    private final Map<Integer, Integer> bankQuantities      = new HashMap<>();
 
     /**
      * Updates sapling counts from the player's inventory container.
      *
-     * @param container the inventory {@link ItemContainer}, never {@code null}
+     * @param container the inventory {@link ItemContainer}
      */
     public void updateFromInventory(ItemContainer container)
     {
@@ -42,9 +38,8 @@ public class SeedInventory
 
     /**
      * Updates sapling counts from the player's bank container.
-     * Only called when {@code bankTracking} is enabled in config.
      *
-     * @param container the bank {@link ItemContainer}, never {@code null}
+     * @param container the bank {@link ItemContainer}
      */
     public void updateFromBank(ItemContainer container)
     {
@@ -54,11 +49,10 @@ public class SeedInventory
     }
 
     /**
-     * Decrements the inventory count of the given item by one.
-     * Called immediately after a planting is detected so that the
-     * optimizer reflects the change before the next container update.
+     * Decrements the inventory count of the given item by one immediately
+     * after a planting is detected (before the next container event fires).
      *
-     * @param itemId the item ID of the sapling that was just planted
+     * @param itemId the sapling that was just planted
      */
     public void decrementSapling(int itemId)
     {
@@ -70,8 +64,7 @@ public class SeedInventory
     }
 
     /**
-     * Returns all saplings the player currently has available (inventory + bank),
-     * with non-zero quantities populated on each {@link SeedItem}.
+     * Returns all saplings currently available (inventory + bank), with quantities.
      *
      * @return a new list; modifications do not affect internal state
      */
@@ -90,18 +83,11 @@ public class SeedInventory
         return result;
     }
 
-    // -----------------------------------------------------------------------
-
     private void countItems(ItemContainer container, Map<Integer, Integer> target)
     {
         for (Item item : container.getItems())
         {
-            if (item.getId() <= 0)
-            {
-                continue;
-            }
-            // Only count items that are known saplings
-            if (FarmingData.SAPLING_IDS.contains(item.getId()))
+            if (item.getId() > 0 && FarmingData.SAPLING_IDS.contains(item.getId()))
             {
                 target.merge(item.getId(), item.getQuantity(), Integer::sum);
             }

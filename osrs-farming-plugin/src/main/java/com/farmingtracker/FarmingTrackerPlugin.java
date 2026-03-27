@@ -13,7 +13,6 @@ import com.farmingtracker.webhook.WebhookService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.inject.Provides;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameState;
@@ -29,6 +28,8 @@ import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.lang.reflect.Type;
@@ -64,7 +65,6 @@ import java.util.stream.Collectors;
  * RuneLite RS-profile config ({@code ConfigManager#setRSProfileConfiguration}).
  * They survive plugin restarts and client restarts.
  */
-@Slf4j
 @PluginDescriptor(
         name = "Farming Tracker",
         description = "Tracks tree and fruit-tree patch grow timers and sends " +
@@ -81,6 +81,8 @@ public class FarmingTrackerPlugin extends Plugin
      *   <li>"You plant an apple tree sapling in the fruit tree patch." → group(1) = "apple tree"</li>
      * </ul>
      */
+    private static final Logger log = LoggerFactory.getLogger(FarmingTrackerPlugin.class);
+
     private static final Pattern PLANT_PATTERN =
             Pattern.compile("You plant (?:a|an) (.+?) sapling", Pattern.CASE_INSENSITIVE);
 
